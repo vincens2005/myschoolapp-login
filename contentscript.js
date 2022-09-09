@@ -45,7 +45,7 @@ async function blackbaud_contentscript() {
 
 function open_portalplus() {
 	browser.runtime.sendMessage({
-    greeting: "Greeting from the content script",
+    action: "ppp_login"
   });
 }
 
