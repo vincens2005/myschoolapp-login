@@ -9,7 +9,18 @@ function origin(url) {
 }
 
 browser.runtime.onMessage.addListener(async (data, sender) => {
-	if (data?.action != "ppp_login") return;
+	if (data?.action != "ppp_login" && data?.action != "set_pppurl") return;
+
+	if (data.action == "set_pppurl") {
+		console.log("setting portalplus URL to " + data.url)
+		await browser.cookies.set({
+			url: origin(sender.url),
+			name: "portalplus_url",
+			value: data.url
+		});
+
+		return;
+	}
 
 	let baseurl = origin(sender.url);
 
@@ -20,7 +31,7 @@ browser.runtime.onMessage.addListener(async (data, sender) => {
     name: "portalplus_url"
   });
 
-	portalplus_url = portalplus_url.value;
+	portalplus_url = origin(portalplus_url.value);
 
   console.log(portalplus_url);
 

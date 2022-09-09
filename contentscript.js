@@ -5,11 +5,33 @@ async function check_login() {
 }
 
 async function blackbaud_contentscript() {
+	let url = new URL(window.location);
+	if (!document.cookie.includes("portalplus_url=")) {
+		if (!url.searchParams.get("portalplus_url")) return;
+
+		console.log(url.searchParams.get("portalplus_url"));
+
+		browser.runtime.sendMessage({
+			action: "set_pppurl",
+			url: decodeURIComponent(url.searchParams.get("portalplus_url"))
+		});
+	}
+
+	if (url.searchParams.get("email")) {
+		console.log("we have an email!");
+		let emailfunc = () => {
+			console.log("trying to fill email...");
+			if (!document.querySelector("#Username")) return setTimeout(emailfunc, 200);
+			document.querySelector("#Username").value = decodeURIComponent(url.searchParams.get("email"));
+			console.log("filled!");
+		}
+		emailfunc();
+	}
+
 	console.log("checking if we are logged in");
 	if (await check_login()) {
-
-		if (!document.cookie.includes("portalplus_url=")) return;
-
+		console.log("we are logged in!");
+		
 		let div = document.createElement("DIV");
 		div.innerHTML = `
 			<button style="
