@@ -1,3 +1,5 @@
+let waiting_for_login = false;
+
 async function check_login(baseurl) {
 	let req = await fetch(baseurl + "/api/webapp/userstatus/");
 	let data = await req.json();
@@ -8,8 +10,16 @@ function origin(url) {
 	return (new URL(url)).origin;
 }
 
-browser.runtime.onMessage.addListener(async (data, sender) => {
-	if (data?.action != "ppp_login" && data?.action != "set_pppurl") return;
+browser.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
+	if (data?.action != "ppp_login" && data?.action != "set_pppurl" && data?.action != "bb_login") return;
+
+	if (data.action == "bb_login") {
+		browser.tabs.create({
+			url: data.url
+		});
+		waiting_for_login = sendResponse;
+		return;
+	}
 
 	if (data.action == "set_pppurl") {
 		console.log("setting portalplus URL to " + data.url)
@@ -54,7 +64,15 @@ browser.runtime.onMessage.addListener(async (data, sender) => {
 		}
 	})(); // idfk
 
+	if (waiting_for_login) {
+		await browser.tabs.remove(sender.tab.id);
+		waiting_for_login({response: {succes: true}});
+		waiting_for_login = false;
+	}
+
+	if (!data.open) return;
+
 	browser.tabs.create({
-		url: portalplus_url
+		url: portalplus_url + "login.html"
 	});
 });
