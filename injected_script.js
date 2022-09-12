@@ -7,7 +7,30 @@ if (window.is_portalplus) {
 	})();
 
 	window.bb_login = (email, baseurl) => {
-		document.querySelector("#secret_blackbaud_login_button").innerHTML = baseurl + "/app/student?email=" + encodeURIComponent(email) + "&portalplus_url=" + encodeURIComponent(window.location.origin);
-		document.querySelector("#secret_blackbaud_login_button").click();
+		let secretbutton = document.querySelector("#secret_blackbaud_login_button");
+		secretbutton.innerHTML = baseurl + "/app/student?email=" + encodeURIComponent(email) + "&portalplus_url=" + encodeURIComponent(window.location.origin);
+		secretbutton.click();
+
+		return new Promise((resolve, reject) => {
+			const observer = new MutationObserver((mutationList, observer) => {
+				for (const mutation of mutationList) {
+					if (mutation.attributeName == "success") {
+						observer.disconnect();
+						secretbutton.innerHTML = "";
+						secretbutton.removeAttribute("success");
+						console.log("we did it! resolving promise");
+						resolve(true);
+						return true;
+					}
+				}
+
+				observer.disconnect();
+				secretbutton.innerHTML = "";
+				secretbutton.removeAttribute("success");
+				reject();
+			});
+
+			observer.observe(secretbutton, {attributes: true});
+		});
 	}
 }

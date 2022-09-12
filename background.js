@@ -18,6 +18,9 @@ browser.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
 			url: data.url
 		});
 		waiting_for_login = sendResponse;
+		setTimeout(() => {
+			waiting_for_login = false;
+		}, 2 * 60 * 1000); // two minute timeout
 		return;
 	}
 
@@ -66,7 +69,7 @@ browser.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
 
 	if (waiting_for_login) {
 		await browser.tabs.remove(sender.tab.id);
-		waiting_for_login({response: {succes: true}});
+		waiting_for_login();
 		waiting_for_login = false;
 	}
 

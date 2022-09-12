@@ -32,7 +32,7 @@ async function blackbaud_contentscript() {
 	if (await check_login()) {
 		console.log("we are logged in!");
 
-		open_portalplus(false);
+		browser.runtime.sendMessage({action: "ppp_login"});
 
 		let div = document.createElement("DIV");
 		div.innerHTML = `
@@ -67,10 +67,10 @@ async function blackbaud_contentscript() {
 }
 
 
-function open_portalplus(open) {
-	browser.runtime.sendMessage({
+function open_portalplus() {
+		browser.runtime.sendMessage({
     action: "ppp_login",
-    open: open ?? true
+    open: true
   });
 }
 
@@ -82,11 +82,14 @@ else if(document.title.match(/portal\+\+/i) ) {
 	let div = document.createElement("DIV");
 	div.style.display = "none";
 	div.id = "secret_blackbaud_login_button";
-	div.onclick = async e => {
+	div.onclick = e => {
 		browser.runtime.sendMessage({
 			action: "bb_login",
 			url: e.target.innerText
+		}, () => {
+			e.target.setAttribute("success", "true");
 		});
+
 	};
 	document.body.appendChild(div);
 
