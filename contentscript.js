@@ -6,8 +6,8 @@ async function check_login() {
 
 async function blackbaud_contentscript() {
 	let url = new URL(window.location);
-	if (!document.cookie.includes("portalplus_url=")) {
-		if (!url.searchParams.get("portalplus_url")) return;
+	if (!document.cookie.includes("portalplus_url=") && url.searchParams.get("portalplus_url")) return;
+	if (url.searchParams.get("portalplus_url")) {
 
 		console.log(url.searchParams.get("portalplus_url"));
 
@@ -93,8 +93,8 @@ else if(document.title.match(/portal\+\+/i) ) {
 	};
 	document.body.appendChild(div);
 
-
 	let file = chrome.runtime.getURL("injected_script.js");
+
 	let th = document.getElementsByTagName("body")[0];
 	let s = document.createElement('script');
 	s.setAttribute('type', 'text/javascript');
