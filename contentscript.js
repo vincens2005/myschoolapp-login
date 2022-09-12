@@ -94,7 +94,7 @@ else if(document.title.match(/portal\+\+/i) ) {
 	document.body.appendChild(div);
 
 	// stolen from https://stackoverflow.com/a/20513730/15317442
-	let file = browser.extension.getURL("injected_script.js");
+	let file = browser.runtime.getURL("injected_script.js");
 	let th = document.getElementsByTagName("body")[0];
 	let s = document.createElement('script');
 	s.setAttribute('type', 'text/javascript');
