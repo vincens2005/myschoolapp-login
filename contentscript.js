@@ -11,7 +11,7 @@ async function blackbaud_contentscript() {
 
 		console.log(url.searchParams.get("portalplus_url"));
 
-		browser.runtime.sendMessage({
+		chrome.runtime.sendMessage({
 			action: "set_pppurl",
 			url: decodeURIComponent(url.searchParams.get("portalplus_url"))
 		});
@@ -32,7 +32,7 @@ async function blackbaud_contentscript() {
 	if (await check_login()) {
 		console.log("we are logged in!");
 
-		browser.runtime.sendMessage({action: "ppp_login"});
+		chrome.runtime.sendMessage({action: "ppp_login"});
 
 		let div = document.createElement("DIV");
 		div.innerHTML = `
@@ -68,7 +68,7 @@ async function blackbaud_contentscript() {
 
 
 function open_portalplus() {
-		browser.runtime.sendMessage({
+		chrome.runtime.sendMessage({
     action: "ppp_login",
     open: true
   });
@@ -83,7 +83,7 @@ else if(document.title.match(/portal\+\+/i) ) {
 	div.style.display = "none";
 	div.id = "secret_blackbaud_login_button";
 	div.onclick = e => {
-		browser.runtime.sendMessage({
+		chrome.runtime.sendMessage({
 			action: "bb_login",
 			url: e.target.innerText
 		}, () => {
@@ -93,8 +93,8 @@ else if(document.title.match(/portal\+\+/i) ) {
 	};
 	document.body.appendChild(div);
 
-	// stolen from https://stackoverflow.com/a/20513730/15317442
-	let file = browser.extension.getURL("injected_script.js");
+
+	let file = chrome.runtime.getURL("injected_script.js");
 	let th = document.getElementsByTagName("body")[0];
 	let s = document.createElement('script');
 	s.setAttribute('type', 'text/javascript');

@@ -11,11 +11,11 @@ function origin(url) {
 	return (new URL(url)).origin;
 }
 
-browser.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
-	if (data?.action != "ppp_login" && data?.action != "set_pppurl" && data?.action != "bb_login") return;
+chrome.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
+	if (data?.action != "ppp_login" && data?.action != "set_pppurl" && data?.action != "bb_login" && data?.action != "inject_script") return;
 
 	if (data.action == "bb_login") {
-		browser.tabs.create({
+		chrome.tabs.create({
 			url: data.url
 		});
 		waiting_for_login = sendResponse;
@@ -29,7 +29,7 @@ browser.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
 
 	if (data.action == "set_pppurl") {
 		console.log("setting portalplus URL to " + data.url)
-		await browser.cookies.set({
+		await chrome.cookies.set({
 			url: origin(sender.url),
 			name: "portalplus_url",
 			value: data.url
@@ -42,7 +42,7 @@ browser.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
 
 	console.log(baseurl)
 
-	let portalplus_url = await browser.cookies.get({
+	let portalplus_url = await chrome.cookies.get({
     url: sender.url,
     name: "portalplus_url"
   });
@@ -53,14 +53,14 @@ browser.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
 
   if (!portalplus_url) return;
 
-  let bb_cookies = await browser.cookies.getAll({
+  let bb_cookies = await chrome.cookies.getAll({
 		url: sender.url
   });
 
 
 	await (async () => {
 		for (let cookie of bb_cookies) {
-			let w = await browser.cookies.set({
+			let w = await chrome.cookies.set({
 				url: portalplus_url,
 				name: cookie.name,
 				value: cookie.value,
@@ -71,9 +71,9 @@ browser.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
 	})(); // idfk
 
 	if (waiting_for_login) {
-		await browser.tabs.remove(sender.tab.id);
+		await chrome.tabs.remove(sender.tab.id);
 		waiting_for_login();
-		browser.tabs.update(login_tab, {
+		chrome.tabs.update(login_tab, {
 			active: true,
 		});
 		waiting_for_login = false;
@@ -82,7 +82,7 @@ browser.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
 
 	if (!data.open) return;
 
-	browser.tabs.create({
-		url: portalplus_url + "login.html"
+	chrome.tabs.create({
+		url: portalplus_url + "/login.html"
 	});
 });
