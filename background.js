@@ -83,6 +83,6 @@ browser.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
 	if (!data.open) return;
 
 	browser.tabs.create({
-		url: portalplus_url + "login.html"
+		url: portalplus_url + "/login.html"
 	});
 });
