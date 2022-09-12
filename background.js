@@ -1,4 +1,5 @@
 let waiting_for_login = false;
+let login_tab = null;
 
 async function check_login(baseurl) {
 	let req = await fetch(baseurl + "/api/webapp/userstatus/");
@@ -18,8 +19,10 @@ browser.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
 			url: data.url
 		});
 		waiting_for_login = sendResponse;
+		login_tab = sender.tab.id;
 		setTimeout(() => {
 			waiting_for_login = false;
+			login_tab = null;
 		}, 2 * 60 * 1000); // two minute timeout
 		return;
 	}
@@ -70,7 +73,11 @@ browser.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
 	if (waiting_for_login) {
 		await browser.tabs.remove(sender.tab.id);
 		waiting_for_login();
+		browser.tabs.update(login_tab, {
+			active: true,
+		});
 		waiting_for_login = false;
+		login_tab = null;
 	}
 
 	if (!data.open) return;
