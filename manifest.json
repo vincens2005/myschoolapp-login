@@ -1,6 +1,6 @@
 {
 	"name": "Portal++ Login Helper",
-	"version": "1.0",
+	"version": "1.0.2",
 	"description": "Allows login to portal++ using BlackBaud BBID",
 	"manifest_version": 3,
 	"permissions": [

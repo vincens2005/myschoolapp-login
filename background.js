@@ -18,7 +18,7 @@ chrome.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
 		chrome.tabs.create({
 			url: data.url
 		});
-		waiting_for_login = sendResponse;
+		waiting_for_login = true;
 		login_tab = sender.tab.id;
 		setTimeout(() => {
 			waiting_for_login = false;
@@ -72,7 +72,11 @@ chrome.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
 
 	if (waiting_for_login) {
 		await chrome.tabs.remove(sender.tab.id);
-		waiting_for_login();
+
+		chrome.tabs.sendMessage(login_tab, {
+			action: "login_success"
+		});
+		
 		chrome.tabs.update(login_tab, {
 			active: true,
 		});

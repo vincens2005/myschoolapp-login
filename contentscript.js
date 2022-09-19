@@ -68,12 +68,17 @@ async function blackbaud_contentscript() {
 
 
 function open_portalplus() {
-		chrome.runtime.sendMessage({
+	chrome.runtime.sendMessage({
     action: "ppp_login",
     open: true
   });
 }
 
+chrome.runtime.onMessage.addListener(data => {
+	if (data.action == "login_success") {
+		document.querySelector("#secret_blackbaud_login_button").setAttribute("success", "true");
+	}
+});
 
 if (document.querySelector("#__AjaxAntiForgery")) {
 	blackbaud_contentscript();
@@ -86,8 +91,6 @@ else if(document.title.match(/portal\+\+/i) ) {
 		chrome.runtime.sendMessage({
 			action: "bb_login",
 			url: e.target.innerText
-		}, () => {
-			e.target.setAttribute("success", "true");
 		});
 
 	};
@@ -101,3 +104,4 @@ else if(document.title.match(/portal\+\+/i) ) {
 	s.setAttribute('src', file);
 	th.appendChild(s);
 }
+
