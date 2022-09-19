@@ -74,6 +74,11 @@ function open_portalplus() {
   });
 }
 
+browser.runtime.onMessage.addListener(data => {
+	if (data.action == "login_success") {
+		document.querySelector("#secret_blackbaud_login_button").setAttribute("success", "true");
+	}
+});
 
 if (document.querySelector("#__AjaxAntiForgery")) {
 	blackbaud_contentscript();
@@ -86,8 +91,6 @@ else if(document.title.match(/portal\+\+/i) ) {
 		browser.runtime.sendMessage({
 			action: "bb_login",
 			url: e.target.innerText
-		}, () => {
-			e.target.setAttribute("success", "true");
 		});
 
 	};
@@ -101,3 +104,4 @@ else if(document.title.match(/portal\+\+/i) ) {
 	s.setAttribute('src', file);
 	th.appendChild(s);
 }
+
